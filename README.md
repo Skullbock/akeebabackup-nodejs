@@ -14,6 +14,7 @@ You can also clone this repository into your `node_modules` directory.
 
 ### Trigger a Backup
 
+```js
 	var akeeba = require('akeebabackup');
 
 	var yoursite = new akeeba('http://www.example.com', 'yoursecretkey');
@@ -24,3 +25,4 @@ You can also clone this repository into your `node_modules` directory.
 	} catch(e) {
 		console.log(e);
 	}
+```
