@@ -1,0 +1,21 @@
+{
+  "name": "AkeebaBackup NodeJS",
+  "version": "0.1.0",
+  "description": "NodeJS npm module for AkeebaBackup JSON APIs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": "https://github.com/Skullbock/akeebabackup-nodejs",
+  "keywords": [
+    "backup",
+    "akeeba",
+    "akeebabakup",
+    "joomla"
+  ],
+  "author": "Daniele Rosario",
+  "license": "GPLv3",
+  "dependencies": {
+    "request": "*"
+  }
+}
