@@ -545,4 +545,4 @@ AkeebaBackup.prototype.parseResponse = function(data) {
     }
 }
 
-exports.AkeebaBackup = AkeebaBackup;
+module.exports = AkeebaBackup;
