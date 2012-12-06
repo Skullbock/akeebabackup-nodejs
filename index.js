@@ -9,8 +9,12 @@ var crypto      = require('crypto'),
  * Constructor
  * @param  {string}   url       The url of the website to backup
  * @param  {string}   secret    The secret key of the website
+ *
+ * @class Container class for all the AkeebaBackup related method
+ * @extends EventEmitter
  */
 function AkeebaBackup(url, secret) {
+    /** @lends AkeebaBackup# */
     if(false === (this instanceof AkeebaBackup)) {
         return new AkeebaBackup(url, secret);
     }
@@ -25,6 +29,10 @@ sys.inherits(AkeebaBackup, emitter);
 
 /**
  * Backup a website
+ *
+ * @fires   started     When the backup actually is started on the website
+ * @fires   step        When another step of the backup is finished
+ * @fires   completed   When the backup is completed
  */
 AkeebaBackup.prototype.backup = function() {
 
@@ -52,6 +60,10 @@ AkeebaBackup.prototype.backup = function() {
  * @param  {string} extension The extension name / element (ie: akeeba)
  * @param  {string} type      The extension type (ie: component)
  * @param  {string} group     Optional: the extension group (ie: system for plugins)
+ *
+ * @fires   srp_started     When the System Restore Point is started
+ * @fires   step            When another step of the backup is finished
+ * @fires   completed       When the System Restore Point is finished
  */
 AkeebaBackup.prototype.srp = function(extension, type, group) {
 
@@ -81,6 +93,9 @@ AkeebaBackup.prototype.srp = function(extension, type, group) {
 
 /**
  * Step a Backup
+ *
+ * @fires   step        
+ * @fires   completed
  */
 AkeebaBackup.prototype.stepBackup = function() {
        
@@ -193,6 +208,9 @@ AkeebaBackup.prototype.getBackupInfo = function(id, callback) {
  *
  * @param  {int} id      The id of the backup to download
  * @param  {string} file The file to which we should save the file
+ *
+ * @fires   download_step
+ * @fires   downloaded
  */
 AkeebaBackup.prototype.download = function(id, file) {
 
@@ -246,7 +264,8 @@ AkeebaBackup.prototype.download = function(id, file) {
  * @param  {int}    id   The id of the backup
  * @param  {string} file The file on which we'll save the backup
  *
- * @return {[type]}      [description]
+ * @fires   download_step
+ * @fires   downloaded
  */
 AkeebaBackup.prototype.downloadDirect = function(id, file) {
     var $this = this;
@@ -334,6 +353,8 @@ AkeebaBackup.prototype.deleteFiles = function(id, callback) {
  *
  * @param  {string} tag  The tag of the log file (ie: remote, restorepoint)
  * @param  {string} file The file to which we should save the log
+ *
+ * @fires   downloaded
  */
 AkeebaBackup.prototype.getLog = function(tag, file) {
 
@@ -389,6 +410,11 @@ AkeebaBackup.prototype.updateGetInformation = function(callback, force) {
 
 /**
  * Triggers the entire akeeba update process
+ *
+ * @fires   updated
+ * @fires   update_download
+ * @fires   update_extract
+ * @fires   update_install
  */
 AkeebaBackup.prototype.update = function() {
     var $this = this;
@@ -406,6 +432,8 @@ AkeebaBackup.prototype.update = function() {
  * Download the update package for akeeba
  *
  * @param  {Function} callback The callback called at the end of the download
+ *
+ * @fires   update_download
  */
 AkeebaBackup.prototype.updateDownload = function(callback) {
 
@@ -423,6 +451,8 @@ AkeebaBackup.prototype.updateDownload = function(callback) {
  * Extract the update package for akeeba
  *
  * @param  {Function} callback The callback called at the end of the download
+ *
+ * @fires   update_extract
  */
 AkeebaBackup.prototype.updateExtract = function(callback) {
 
@@ -440,6 +470,8 @@ AkeebaBackup.prototype.updateExtract = function(callback) {
  * Install the update package for akeeba
  *
  * @param  {Function} callback The callback called at the end of the download
+ *
+ * @fires   update_install
  */
 AkeebaBackup.prototype.updateInstall = function(callback) {
 

@@ -15,14 +15,55 @@ You can also clone this repository into your `node_modules` directory.
 ### Trigger a Backup
 
 ```js
-	var akeeba = require('akeebabackup');
+var akeeba = require('akeebabackup');
+var yoursite = new akeeba('http://www.example.com', 'yoursecretkey');
 
-	var yoursite = new akeeba('http://www.example.com', 'yoursecretkey');
+try {
+	yoursite.backup();
+	yoursite.on('completed', function(data){console.log('backup completed')});
+} catch(e) {
+	console.log(e);
+}
+```
 
-	try {
-		yoursite.backup();
-		yoursite.on('completed', function(data){console.log('backup completed')});
-	} catch(e) {
-		console.log(e);
-	}
+## Available methods
+
+Here you'll be able to see a list of methods available in the akeebabackup module, such as:
+- backup
+- srp
+- delete
+- deleteFiles
+- download
+- downloadDirect
+- getBackupInfo
+- getLog
+- getProfiles
+- getVersion
+- listBackups
+- update
+- updateGetInformations
+
+### backup
+
+Trigger a new backup
+
+```js
+var akeeba = require('akeebabackup');
+var yoursite = new akeeba('http://www.example.com', 'yoursecretkey');
+
+try {
+	yoursite.backup();
+	
+	yoursite.on('started', function(data){
+		console.log('backup started');
+	});
+	yoursite.on('step', function(data){
+		console.log('backup has completed a step');
+	});
+	yoursite.on('completed', function(data){
+		console.log('backup completed');
+	});
+} catch(e) {
+	console.log(e);
+}
 ```
