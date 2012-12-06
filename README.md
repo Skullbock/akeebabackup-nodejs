@@ -1,6 +1,6 @@
 # AkeebaBackup module for NodeJS
 
-This module lets you easily use the AkeebaBackup JSON APIs in node.js. AkeebaBackup (http://www.akeebabackup.com) is THE backup software for Joomla!
+This module lets you easily use the AkeebaBackup JSON APIs in node.js. AkeebaBackup (http://www.akeebabackup.com) is THE backup software for Joomla! As of version 0.1.0, it supports only the raw encryption, but in the future, if needed, the other encryption system supported by the apis will be added.
 
 ## Installation
 
@@ -108,6 +108,103 @@ try {
 	// yoursite.delete(id, callback)
 	yoursite.delete(42, function(result){
 
+	});
+} catch(e) {
+	console.log(e);
+}
+```
+
+### deleteFiles
+
+Remove only the files corresponding to a given backup record, but not the backup record itself. 
+The Akeeba Backup component will display this backup record marked as "obsolete"
+
+```js
+var akeeba = require('akeebabackup');
+var yoursite = new akeeba('http://www.example.com', 'yoursecretkey');
+
+try {
+	// yoursite.deleteFiles(id, callback)
+	yoursite.deleteFiles(42, function(result){
+
+	});
+} catch(e) {
+	console.log(e);
+}
+```
+
+### download
+
+Download (step by step) a backup file to a file
+
+```js
+var akeeba = require('akeebabackup');
+var yoursite = new akeeba('http://www.example.com', 'yoursecretkey');
+
+try {
+	// yoursite.download(id, file)
+	yoursite.download(42, 'yourbackup.jpa');
+
+	yoursite.on('completed', function(){
+		console.log('File saved');
+	});
+} catch(e) {
+	console.log(e);
+}
+```
+
+### downloadDirect
+
+Download a file directly, without encryption and step by step download
+
+```js
+var akeeba = require('akeebabackup');
+var yoursite = new akeeba('http://www.example.com', 'yoursecretkey');
+
+try {
+	// yoursite.downloadDirect(id, file)
+	yoursite.downloadDirect(42, 'yourbackup.jpa');
+
+	yoursite.on('completed', function(){
+		console.log('File saved');
+	});
+} catch(e) {
+	console.log(e);
+}
+```
+
+### getBackupInfo
+
+Gets detailed information about a specific backup record.
+
+```js
+var akeeba = require('akeebabackup');
+var yoursite = new akeeba('http://www.example.com', 'yoursecretkey');
+
+try {
+	// yoursite.getBackupInfo(id, callback)
+	yoursite.getBackupInfo(42, function(data){
+		console.log(data);
+	});
+} catch(e) {
+	console.log(e);
+}
+```
+
+### getLog
+
+Downloads The log file for a specific backup tag
+
+```js
+var akeeba = require('akeebabackup');
+var yoursite = new akeeba('http://www.example.com', 'yoursecretkey');
+
+try {
+	// yoursite.getLog(tag, file)
+	yoursite.getLog('remote', 'log.txt');
+
+	yoursite.on('completed', function(){
+		console.log('Log saved');
 	});
 } catch(e) {
 	console.log(e);

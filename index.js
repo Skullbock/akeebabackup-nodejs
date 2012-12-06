@@ -209,8 +209,8 @@ AkeebaBackup.prototype.getBackupInfo = function(id, callback) {
  * @param  {int} id      The id of the backup to download
  * @param  {string} file The file to which we should save the file
  *
- * @fires   download_step
- * @fires   downloaded
+ * @fires   step
+ * @fires   completed
  */
 AkeebaBackup.prototype.download = function(id, file) {
 
@@ -236,7 +236,7 @@ AkeebaBackup.prototype.download = function(id, file) {
 
             $this.sendRequest(json, function(response){
                 if (response) {
-                    $this.emit("download_step", {file: file});
+                    $this.emit("step", {file: file});
                     var buff = new Buffer(response, 'base64');
                     fs.appendFile(file, buff, 'binary', function(err){
                         if (err) {
@@ -248,7 +248,7 @@ AkeebaBackup.prototype.download = function(id, file) {
                     if (segment != 1) {
                         stepDownload(part+1, 1);
                     } else {
-                        $this.emit("downloaded", {file: file});
+                        $this.emit("completed", {file: file});
                     }
                 }
             });
@@ -264,8 +264,8 @@ AkeebaBackup.prototype.download = function(id, file) {
  * @param  {int}    id   The id of the backup
  * @param  {string} file The file on which we'll save the backup
  *
- * @fires   download_step
- * @fires   downloaded
+ * @fires   step
+ * @fires   completed
  */
 AkeebaBackup.prototype.downloadDirect = function(id, file) {
     var $this = this;
@@ -288,7 +288,7 @@ AkeebaBackup.prototype.downloadDirect = function(id, file) {
 
             $this.sendRequest(json, function(response){
                 if (response) {
-                    $this.emit("download_step", {file: file});
+                    $this.emit("step", {file: file});
                     fs.appendFile(file, response, 'binary', function(err){
                         if (err) {
                             $this.emit("error", err);
@@ -296,7 +296,7 @@ AkeebaBackup.prototype.downloadDirect = function(id, file) {
                         stepDownload(part + 1 );
                     });
                 } else {
-                    $this.emit("downloaded", {file: file});
+                    $this.emit("completed", {file: file});
                 }
             }, true);
         };
@@ -354,7 +354,7 @@ AkeebaBackup.prototype.deleteFiles = function(id, callback) {
  * @param  {string} tag  The tag of the log file (ie: remote, restorepoint)
  * @param  {string} file The file to which we should save the log
  *
- * @fires   downloaded
+ * @fires   completed
  */
 AkeebaBackup.prototype.getLog = function(tag, file) {
 
@@ -378,7 +378,7 @@ AkeebaBackup.prototype.getLog = function(tag, file) {
                     if (err) {
                         $this.emit("error", err);
                     } else {
-                        $this.emit("downloaded", {file: file});
+                        $this.emit("completed", {file: file});
                     }
                 });
             } else {
