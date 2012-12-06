@@ -61,7 +61,7 @@ AkeebaBackup.prototype.backup = function() {
  * @param  {string} type      The extension type (ie: component)
  * @param  {string} group     Optional: the extension group (ie: system for plugins)
  *
- * @fires   srp_started     When the System Restore Point is started
+ * @fires   started     When the System Restore Point is started
  * @fires   step            When another step of the backup is finished
  * @fires   completed       When the System Restore Point is finished
  */
@@ -79,7 +79,7 @@ AkeebaBackup.prototype.srp = function(extension, type, group) {
     var json = this.getRequest('startSRPBackup', data);
 
     this.sendRequest(json, function (data) {
-        $this.emit("srp_started", {data: data});
+        $this.emit("started", {data: data});
 
         // Backup has to continue?
         if (data.HasRun) {
