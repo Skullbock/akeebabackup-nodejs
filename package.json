@@ -19,6 +19,6 @@
   "author": "Daniele Rosario <daniele@weble.it> (http://www.weble.it)",
   "license": "GPLv3",
   "dependencies": {
-    "request": "*"
+    "request": "2.12.x"
   }
 }
