@@ -210,3 +210,107 @@ try {
 	console.log(e);
 }
 ```
+
+### getProfiles
+
+Returns a list of the backup profiles.
+The callback receives an array:
+```json
+	[{id, name}]
+```
+
+```js
+var akeeba = require('akeebabackup');
+var yoursite = new akeeba('http://www.example.com', 'yoursecretkey');
+
+try {
+	// yoursite.getProfiles(callback)
+	yoursite.getProfiles(function(data){
+		console.log(data);
+	});
+} catch(e) {
+	console.log(e);
+}
+```
+
+### getVersion
+
+Returns the version number of the API and the component.
+The callback receives an object:
+```json
+	{api, component, date, edition, updateinfo}
+```
+
+```js
+var akeeba = require('akeebabackup');
+var yoursite = new akeeba('http://www.example.com', 'yoursecretkey');
+
+try {
+	// yoursite.getVersion(callback)
+	yoursite.getVersion(function(data){
+		console.log(data);
+	});
+} catch(e) {
+	console.log(e);
+}
+```
+
+### listBackups
+
+Returns a (partial) list of the backup records known to the component. 
+The records are presented in reverse order, i.e. the first record is the last backup attempt, 
+whereas the last record is the earliest backup attempt known to the component.
+
+```js
+var akeeba = require('akeebabackup');
+var yoursite = new akeeba('http://www.example.com', 'yoursecretkey');
+
+try {
+	// yoursite.listBackups(callback, start, limit)
+	yoursite.listBackups(function(data){
+		console.log(data);
+	}, 0, 50);
+} catch(e) {
+	console.log(e);
+}
+```
+
+### update
+
+Triggers the entire akeeba update process
+
+```js
+var akeeba = require('akeebabackup');
+var yoursite = new akeeba('http://www.example.com', 'yoursecretkey');
+
+try {
+	yoursite.update();
+
+	yoursite.on('step', function(){
+		console.log('step completed');
+	});
+	yoursite.on('completed', function(){
+		console.log('update completed');
+	});
+} catch(e) {
+	console.log(e);
+}
+```
+
+### updateGetInformation
+
+Returns update status information, as returned by Live Update itself
+
+```js
+var akeeba = require('akeebabackup');
+var yoursite = new akeeba('http://www.example.com', 'yoursecretkey');
+
+try {
+	// yoursite.updateGetInformation(callback, force_fetch_new_data)
+	yoursite.updateGetInformation(function(data){
+		console.log(data);
+	}, true);
+} catch(e) {
+	console.log(e);
+}
+```

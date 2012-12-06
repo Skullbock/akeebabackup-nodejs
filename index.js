@@ -411,10 +411,8 @@ AkeebaBackup.prototype.updateGetInformation = function(callback, force) {
 /**
  * Triggers the entire akeeba update process
  *
- * @fires   updated
- * @fires   update_download
- * @fires   update_extract
- * @fires   update_install
+ * @fires   step
+ * @fires   completed
  */
 AkeebaBackup.prototype.update = function() {
     var $this = this;
@@ -422,7 +420,7 @@ AkeebaBackup.prototype.update = function() {
     this.updateDownload(function(){
         $this.updateExtract(function(){
             $this.updateInstall(function(data){
-                $this.emit('updated', data);
+                $this.emit('completed', data);
             });
         })
     });
@@ -433,7 +431,7 @@ AkeebaBackup.prototype.update = function() {
  *
  * @param  {Function} callback The callback called at the end of the download
  *
- * @fires   update_download
+ * @fires   step
  */
 AkeebaBackup.prototype.updateDownload = function(callback) {
 
@@ -442,7 +440,7 @@ AkeebaBackup.prototype.updateDownload = function(callback) {
     var json = this.getRequest('updateDownload');
 
     this.sendRequest(json, function (data) {
-        $this.emit('update_download', data);
+        $this.emit('step', data);
         callback(data);
     });
 }
@@ -452,7 +450,7 @@ AkeebaBackup.prototype.updateDownload = function(callback) {
  *
  * @param  {Function} callback The callback called at the end of the download
  *
- * @fires   update_extract
+ * @fires   step
  */
 AkeebaBackup.prototype.updateExtract = function(callback) {
 
@@ -461,7 +459,7 @@ AkeebaBackup.prototype.updateExtract = function(callback) {
     var json = this.getRequest('updateExtract');
 
     this.sendRequest(json, function (data) {
-        $this.emit('update_extract', data);
+        $this.emit('step', data);
         callback(data);
     });
 }
@@ -471,7 +469,7 @@ AkeebaBackup.prototype.updateExtract = function(callback) {
  *
  * @param  {Function} callback The callback called at the end of the download
  *
- * @fires   update_install
+ * @fires   step
  */
 AkeebaBackup.prototype.updateInstall = function(callback) {
 
@@ -480,7 +478,7 @@ AkeebaBackup.prototype.updateInstall = function(callback) {
     var json = this.getRequest('updateInstall');
 
     this.sendRequest(json, function (data) {
-        $this.emit('update_install', data);
+        $this.emit('step', data);
         callback(data);
     });
 }
