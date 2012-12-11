@@ -47,7 +47,7 @@ AkeebaBackup.prototype.backup = function() {
         // Backup has to continue?
         if (data.HasRun) {
             // Go on!
-            $this.stepBackup();
+            $this.stepBackup(false);
         } else {
             $this.emit("completed", {data: data});
         }
@@ -84,7 +84,7 @@ AkeebaBackup.prototype.srp = function(extension, type, group) {
         // Backup has to continue?
         if (data.HasRun) {
             // Go on!
-            $this.stepBackup();
+            $this.stepBackup(true);
         } else {
             $this.emit("completed", {data: data});
         }
@@ -94,16 +94,19 @@ AkeebaBackup.prototype.srp = function(extension, type, group) {
 /**
  * Step a Backup
  *
+ * @param {boolean} srp If the backup is a SRP
+ *
  * @fires   step        
  * @fires   completed
  */
-AkeebaBackup.prototype.stepBackup = function() {
+AkeebaBackup.prototype.stepBackup = function(srp) {
        
     var $this = this;
     
-    var data = {
-        tag: 'restorepoint'
-    };
+    var data = {};
+    if (srp) {
+        data.tag = 'restorepoint';
+    }
 
     var json = this.getRequest('stepBackup', data);
 
@@ -112,7 +115,7 @@ AkeebaBackup.prototype.stepBackup = function() {
         if (data.HasRun) {
             // Go on!
             $this.emit("step", {data: data});
-            $this.stepBackup();
+            $this.stepBackup(srp);
         } else {
             $this.emit("completed", {data: data});
         }
