@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Beautiful Docs</title>
+    <link type="text/css" rel="stylesheet" href="http://fonts.googleapis.com/css?family=Droid+Sans&subset=latin">
+    <link type="text/css" rel="stylesheet" href="/css/reset.css">
+    <link type="text/css" rel="stylesheet" href="/css/docs.css">
+    <link type="text/css" rel="stylesheet" href="/css/print.css" media="print">
+    <link type="text/css" rel="stylesheet" href="http://yandex.st/highlightjs/6.1/styles/sunburst.min.css">
+    
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
+    <script type="text/javascript" src="http://yandex.st/highlightjs/6.1/highlight.min.js"></script>
+    
+    <script type="text/javascript" src="/js/viewer.js"></script>
+</head>
+<body>
+    <div id="page">
+        <a name="top" />
+        
+            <header id="header">
+                <h1><a href="/">Beautiful Docs</a></h1>
+            </header>
+        
+        <div id='content'><a name="akeebabackup-module-for-nodejs"></a><h1>AkeebaBackup module for NodeJS</h1>
+<p>This module lets you easily use the AkeebaBackup JSON APIs in node.js. AkeebaBackup (<a href="http://www.akeebabackup.com">http://www.akeebabackup.com</a>) is THE backup software for Joomla!
+
+</p>
+<a name="installation"></a><h2>Installation</h2>
+<p>Using <code>npm</code>:
+
+</p>
+<pre><code>npm install akeebabackup</code></pre>
+<p>You can also clone this repository into your <code>node_modules</code> directory.
+
+</p>
+<a name="examples"></a><h2>Examples</h2>
+<a name="trigger-a-backup"></a><h3>Trigger a Backup</h3>
+<pre><code class="lang-js">var akeeba = require(&#39;akeebabackup&#39;);
+
+var yoursite = new akeeba(&#39;http://www.example.com&#39;, &#39;yoursecretkey&#39;);
+
+try {
+    yoursite.backup();
+    yoursite.on(&#39;completed&#39;, function(data){console.log(&#39;backup completed&#39;)});
+} catch(e) {
+    console.log(e);
+}</code></pre>
+
+<p>var crypto      = require(&#39;crypto&#39;),
+    request     = require(&#39;request&#39;),
+    sys         = require(&#39;sys&#39;),
+    nodeurl     = require(&#39;url&#39;),
+    fs          = require(&#39;fs&#39;),
+    emitter     = require(&#39;events&#39;).EventEmitter;
+
+</p>
+<p>/<strong>
+ <em> Constructor
+ </em> @param  {string}   url       The url of the website to backup
+ <em> @param  {string}   secret    The secret key of the website
+ </em>
+ <em> @class Container class for all the AkeebaBackup related method
+ </em> @extends EventEmitter
+ */
+function AkeebaBackup(url, secret) {
+    /</strong> @lends AkeebaBackup# */
+    if(false === (this instanceof AkeebaBackup)) {
+        return new AkeebaBackup(url, secret);
+    }
+    // Parent call
+    emitter.call(this);
+
+</p>
+<pre><code>this.url = url;
+this.secret = secret;</code></pre>
+<p>}
+// Inheritance
+sys.inherits(AkeebaBackup, emitter);
+
+</p>
+<p>/<em>*
+ </em> Backup a website
+ <em>
+ </em> @fires   started     When the backup actually is started on the website
+ <em> @fires   step        When another step of the backup is finished
+ </em> @fires   completed   When the backup is completed
+ */
+AkeebaBackup.prototype.backup = function() {
+
+</p>
+<pre><code>$this = this;        
+
+var json = this.getRequest(&#39;startBackup&#39;);
+
+this.sendRequest(json, function (data) {
+
+    $this.emit(&quot;started&quot;, {data: data});
+
+    // Backup has to continue?
+    if (data.HasRun) {
+        // Go on!
+        $this.stepBackup();
+    } else {
+        $this.emit(&quot;completed&quot;, {data: data});
+    }
+});</code></pre>
+<p>}
+
+</p>
+<p>/<em>*
+ </em> Trigger a System Restore Point backup for an extension
+ <em>
+ </em> @param  {string} extension The extension name / element (ie: akeeba)
+ <em> @param  {string} type      The extension type (ie: component)
+ </em> @param  {string} group     Optional: the extension group (ie: system for plugins)
+ <em>
+ </em> @fires   srp_started     When the System Restore Point is started
+ <em> @fires   step            When another step of the backup is finished
+ </em> @fires   completed       When the System Restore Point is finished
+ */
+AkeebaBackup.prototype.srp = function(extension, type, group) {
+
+</p>
+<pre><code>var $this = this;
+
+var data = {
+    name: extension,
+    type: type,
+    group: group,
+    tag: &#39;restorepoint&#39;
+};
+
+var json = this.getRequest(&#39;startSRPBackup&#39;, data);
+
+this.sendRequest(json, function (data) {
+    $this.emit(&quot;srp_started&quot;, {data: data});
+
+    // Backup has to continue?
+    if (data.HasRun) {
+        // Go on!
+        $this.stepBackup();
+    } else {
+        $this.emit(&quot;completed&quot;, {data: data});
+    }
+});</code></pre>
+<p>}
+
+</p>
+<p>/<em>*
+ </em> Step a Backup
+ <em>
+ </em> @fires   step<br> <em> @fires   completed
+ </em>/
+AkeebaBackup.prototype.stepBackup = function() {
+
+</p>
+<pre><code>var $this = this;
+
+var data = {
+    tag: &#39;restorepoint&#39;
+};
+
+var json = this.getRequest(&#39;stepBackup&#39;, data);
+
+this.sendRequest(json, function (data) {
+    // Backup has to continue?
+    if (data.HasRun) {
+        // Go on!
+        $this.emit(&quot;step&quot;, {data: data});
+        $this.stepBackup();
+    } else {
+        $this.emit(&quot;completed&quot;, {data: data});
+    }
+});</code></pre>
+<p>}
+
+</p>
+<p>/<em>*
+ </em> Returns the version number of the API and the component.
+ <em> The callback receives a parameter with properties:
+ </em> api, component, date, edition, updateinfo
+ <em>
+ </em> @param  {Function} callback The function to call when the version is fetched.
+ */
+AkeebaBackup.prototype.getVersion = function(callback) {
+
+</p>
+<pre><code>var $this = this;
+
+var json = this.getRequest(&#39;getVersion&#39;);
+
+this.sendRequest(json, function (data) {
+    callback(data);
+});</code></pre>
+<p>}
+
+</p>
+<p>/<em>*
+ </em> Returns a list of the backup profiles.
+ <em> The callback receives an array. Each object has properties:
+ </em> id, name
+ <em>
+ </em> @param  {Function} callback The function to call when the version is fetched.
+ */
+AkeebaBackup.prototype.getProfiles = function(callback) {
+
+</p>
+<pre><code>var $this = this;
+
+var json = this.getRequest(&#39;getProfiles&#39;);
+
+this.sendRequest(json, function (data) {
+    callback(data);
+});</code></pre>
+<p>}
+
+</p>
+<p>/<em>*
+ </em> Returns a (partial) list of the backup records known to the component. 
+ <em> The records are presented in reverse order, i.e. the first record is the last backup attempt, 
+ </em> whereas the last record is the earliest backup attempt known to the component.
+ <em>
+ </em> @param  {Function} callback Function to call when the request is done
+ <em> @param  {int}      from     Default = 0.  The starting offset of the list, maps to the limitstart parameter in the Joomla! API.
+ </em> @param  {int}      limit    Default = 50. How many records to return at once, maps to the limit parameter in the Joomla! API. You can set it to 0 to return all records, but do note that this may cause a server timeout.
+ */
+AkeebaBackup.prototype.listBackups = function(callback, from, limit) {
+
+</p>
+<pre><code>from = from ? from : 0;
+limit = limit ? limit : 50;
+
+var data = {
+    from: from,
+    limit: limit
+};
+
+var $this = this;
+
+var json = this.getRequest(&#39;listBackups&#39;, data);
+
+this.sendRequest(json, function (data) {
+    callback(data);
+});</code></pre>
+<p>}
+
+</p>
+<p>/<em>*
+ </em> Gets detailed information about a specific backup record.
+ <em>
+ </em> @param  {int}        id       The id of the backup
+ <em> @param  {Function}   callback Function to call when the request is done
+ </em>/
+AkeebaBackup.prototype.getBackupInfo = function(id, callback) {
+    var data = {
+        backup_id: parseInt(id)
+    };
+
+</p>
+<pre><code>var $this = this;
+
+var json = this.getRequest(&#39;getBackupInfo&#39;, data);
+
+this.sendRequest(json, function (data) {
+    callback(data);
+});</code></pre>
+<p>}
+
+</p>
+<p>/<em>*
+ </em> Download (step by step) a backup file to a file
+ <em>
+ </em> @param  {int} id      The id of the backup to download
+ <em> @param  {string} file The file to which we should save the file
+ </em>
+ <em> @fires   download_step
+ </em> @fires   downloaded
+ */
+AkeebaBackup.prototype.download = function(id, file) {
+
+</p>
+<pre><code>var $this = this;
+
+fs.writeFile(file, &#39;&#39;, function(err){
+    if (err) {
+        $this.emit(&quot;error&quot;, err);
+    }
+
+    var data = {
+        backup_id:  parseInt(id),
+        part_id:    1,
+        segment:    1
+    };
+
+    var json = $this.getRequest(&#39;download&#39;, data);
+
+    function stepDownload(part, segment) {
+        data.part_id = part;
+        data.segment = segment;
+        json = $this.getRequest(&#39;download&#39;, data);
+
+        $this.sendRequest(json, function(response){
+            if (response) {
+                $this.emit(&quot;download_step&quot;, {file: file});
+                var buff = new Buffer(response, &#39;base64&#39;);
+                fs.appendFile(file, buff, &#39;binary&#39;, function(err){
+                    if (err) {
+                        $this.emit(&quot;error&quot;, err);
+                    }
+                    stepDownload(part, segment + 1);
+                });
+            } else {
+                if (segment != 1) {
+                    stepDownload(part+1, 1);
+                } else {
+                    $this.emit(&quot;downloaded&quot;, {file: file});
+                }
+            }
+        });
+    };
+
+    stepDownload(1,1);
+});</code></pre>
+<p>}
+
+</p>
+<p>/<em>*
+ </em> Download a file directly, without encryption and step by step download
+ <em>
+ </em> @param  {int}    id   The id of the backup
+ <em> @param  {string} file The file on which we&#39;ll save the backup
+ </em>
+ <em> @fires   download_step
+ </em> @fires   downloaded
+ */
+AkeebaBackup.prototype.downloadDirect = function(id, file) {
+    var $this = this;
+
+</p>
+<pre><code>fs.writeFile(file, &#39;&#39;, function(err){
+    if (err) {
+        $this.emit(&quot;error&quot;, err);
+    }
+
+    var data = {
+        backup_id:  parseInt(id),
+        part_id:    1
+    };
+
+    var json = $this.getRequest(&#39;downloadDirect&#39;, data);
+
+    function stepDownload(part) {
+        data.part_id = part;
+        json = $this.getRequest(&#39;downloadDirect&#39;, data);
+
+        $this.sendRequest(json, function(response){
+            if (response) {
+                $this.emit(&quot;download_step&quot;, {file: file});
+                fs.appendFile(file, response, &#39;binary&#39;, function(err){
+                    if (err) {
+                        $this.emit(&quot;error&quot;, err);
+                    }
+                    stepDownload(part + 1 );
+                });
+            } else {
+                $this.emit(&quot;downloaded&quot;, {file: file});
+            }
+        }, true);
+    };
+
+    stepDownload(1);
+});</code></pre>
+<p>}
+
+</p>
+<p>/<em>*
+ </em> Completely removes a backup record from the database. 
+ <em> Unlike deleteFiles, it will delete the files corresponding to the given backup record and the backup record itself. 
+ </em> The Akeeba Backup component will not be aware that the specified backup record ever existed.
+ <em>
+ </em> @param  {int}        id       The id of the backup
+ <em> @param  {Function}   callback Function to call when the delete has been completed, with the result as a boolean
+ </em>/
+AkeebaBackup.prototype.delete = function(id, callback) {
+    var data = {
+        backup_id: parseInt(id)
+    };
+
+</p>
+<pre><code>var $this = this;
+
+var json = this.getRequest(&#39;delete&#39;, data);
+
+this.sendRequest(json, function (data) {
+    callback(data);
+});</code></pre>
+<p>}
+
+</p>
+<p>/<em>*
+ </em> Remove only the files corresponding to a given backup record, but not the backup record itself. 
+ <em> The Akeeba Backup component will display this backup record marked as &quot;obsolete&quot;
+ </em>
+ <em> @param  {int}        id       The id of the backup
+ </em> @param  {Function}   callback Function to call when the delete has been completed, with the result as a boolean
+ */
+AkeebaBackup.prototype.deleteFiles = function(id, callback) {
+    var data = {
+        backup_id: parseInt(id)
+    };
+
+</p>
+<pre><code>var $this = this;
+
+var json = this.getRequest(&#39;deleteFiles&#39;, data);
+
+this.sendRequest(json, function (data) {
+    callback(data);
+});</code></pre>
+<p>}
+
+</p>
+<p>/<em>*
+ </em> Downloads The log file for a specific backup tag
+ <em>
+ </em> @param  {string} tag  The tag of the log file (ie: remote, restorepoint)
+ <em> @param  {string} file The file to which we should save the log
+ </em>
+ <em> @fires   downloaded
+ </em>/
+AkeebaBackup.prototype.getLog = function(tag, file) {
+
+</p>
+<pre><code>var $this = this;
+
+fs.writeFile(file, &#39;&#39;, function(err){
+    if (err) {
+        $this.emit(&quot;error&quot;, err);
+    }
+
+    var data = {
+        tag: tag
+    };
+
+    var json = $this.getRequest(&#39;getLog&#39;, data);
+
+    $this.sendRequest(json, function(response){
+        if (response) {
+            var buff = new Buffer(response, &#39;base64&#39;);
+            fs.appendFile(file, buff, function(err){
+                if (err) {
+                    $this.emit(&quot;error&quot;, err);
+                } else {
+                    $this.emit(&quot;downloaded&quot;, {file: file});
+                }
+            });
+        } else {
+            $this.emit(&quot;error&quot;, &quot;Empty Log File&quot;);
+        }
+    });
+});</code></pre>
+<p>}
+
+</p>
+<p>/<em>*
+ </em> Returns update status information, as returned by Live Update itself
+ <em>
+ </em> @param  {Function} callback The callback called when the request is done
+ <em> @param  {bool}     force    If the information should be forcibly retrieved. False means you can get cached responses
+ </em>/
+AkeebaBackup.prototype.updateGetInformation = function(callback, force) {
+    var data = {
+        force: force ? force : 0
+    };
+
+</p>
+<pre><code>var $this = this;
+
+var json = this.getRequest(&#39;updateGetInformation&#39;, data);
+
+this.sendRequest(json, function (data) {
+    callback(data);
+});</code></pre>
+<p>}
+
+</p>
+<p>/<em>*
+ </em> Triggers the entire akeeba update process
+ <em>
+ </em> @fires   updated
+ <em> @fires   update_download
+ </em> @fires   update_extract
+ <em> @fires   update_install
+ </em>/
+AkeebaBackup.prototype.update = function() {
+    var $this = this;
+
+</p>
+<pre><code>this.updateDownload(function(){
+    $this.updateExtract(function(){
+        $this.updateInstall(function(data){
+            $this.emit(&#39;updated&#39;, data);
+        });
+    })
+});</code></pre>
+<p>}
+
+</p>
+<p>/<em>*
+ </em> Download the update package for akeeba
+ <em>
+ </em> @param  {Function} callback The callback called at the end of the download
+ <em>
+ </em> @fires   update_download
+ */
+AkeebaBackup.prototype.updateDownload = function(callback) {
+
+</p>
+<pre><code>var $this = this;
+
+var json = this.getRequest(&#39;updateDownload&#39;);
+
+this.sendRequest(json, function (data) {
+    $this.emit(&#39;update_download&#39;, data);
+    callback(data);
+});</code></pre>
+<p>}
+
+</p>
+<p>/<em>*
+ </em> Extract the update package for akeeba
+ <em>
+ </em> @param  {Function} callback The callback called at the end of the download
+ <em>
+ </em> @fires   update_extract
+ */
+AkeebaBackup.prototype.updateExtract = function(callback) {
+
+</p>
+<pre><code>var $this = this;
+
+var json = this.getRequest(&#39;updateExtract&#39;);
+
+this.sendRequest(json, function (data) {
+    $this.emit(&#39;update_extract&#39;, data);
+    callback(data);
+});</code></pre>
+<p>}
+
+</p>
+<p>/<em>*
+ </em> Install the update package for akeeba
+ <em>
+ </em> @param  {Function} callback The callback called at the end of the download
+ <em>
+ </em> @fires   update_install
+ */
+AkeebaBackup.prototype.updateInstall = function(callback) {
+
+</p>
+<pre><code>var $this = this;
+
+var json = this.getRequest(&#39;updateInstall&#39;);
+
+this.sendRequest(json, function (data) {
+    $this.emit(&#39;update_install&#39;, data);
+    callback(data);
+});</code></pre>
+<p>}
+
+
+</p>
+<p>/<em>*
+ </em> Get the challenge string for the API communications
+ <em>
+ </em> @return {string}        The challenge string
+ */
+AkeebaBackup.prototype.getChallenge = function() {
+    // Challenge for authentication
+    var date = new Date();
+    var salt = date.getTime();
+    var key = crypto.createHash(&#39;md5&#39;).update(salt + this.secret).digest(&quot;hex&quot;);
+    var challenge = salt + &#39;:&#39; + key;
+
+</p>
+<pre><code>return challenge;</code></pre>
+<p>}
+
+</p>
+<p>/<em>*
+ </em> Get the request to send to the server
+ <em>
+ </em> @param  {string} method The method to call
+ <em> @param  {object} data   The data object to send
+ </em>
+ <em> @return {string}        The json request to send
+ </em>/
+AkeebaBackup.prototype.getRequest = function(method, data) {
+    var challenge = this.getChallenge();
+
+</p>
+<pre><code>var body = {
+    method: method,
+    challenge: challenge,
+    data: data
+};
+
+var json = {
+    encapsulation : 1,
+    body: JSON.stringify(body)
+};
+
+return JSON.stringify(json);</code></pre>
+<p>}
+
+</p>
+<p>/<em>*
+ </em> Send the request to the server. Deals with errors automatically
+ <em>
+ </em> @param  {string}   json     the json string to send
+ <em> @param  {Function} callback The method to call on success
+ </em>/
+AkeebaBackup.prototype.sendRequest = function(json, callback, do_not_parse) {
+
+</p>
+<pre><code>var $this = this;
+
+// parse url
+url = nodeurl.parse(this.url, false);
+url = nodeurl.format(url);
+
+// get website info
+var options = url + &#39;index.php?option=com_akeeba&amp;view=json&amp;format=component&amp;json=&#39;+ encodeURIComponent(json);
+
+request(options, function (error, response, body) {
+    if (!error &amp;&amp; response.statusCode == 200) {
+        var data = body;
+        if (!do_not_parse) {
+            data = $this.parseResponse(body);
+        }
+        callback(data);
+    } else {
+        if (!do_not_parse) {
+            $this.emit(&quot;error&quot;, {response: response, body: body, data: body});
+        }
+    }
+});</code></pre>
+<p>}
+
+</p>
+<p>/<em>*
+ </em> Parse the AkeebaBackup Response
+ <em>
+ </em> @param  {strng} data The data sent by AkeebaBackup
+ <em>
+ </em> @return {string}      The parsed data
+ */
+AkeebaBackup.prototype.parseResponse = function(data) {
+    var data = data.substring(3, data.length - 3);
+    try {
+        var data = JSON.parse(data);
+        if (data.body &amp;&amp; data.body.status == 200) {
+            return JSON.parse(data.body.data);
+        }
+    } catch(e) {
+        return {};
+    }
+}
+
+</p>
+<p>module.exports = AkeebaBackup;</p>
+
+</div>
+        <footer id="footer">
+            Powered by <a href="http://github.com/maximebf/beautiful-docs">beautiful-docs</a> -
+            <a href="#top">Back to top</a> - <a href="/all.html">Everything on a single page</a>
+            - <a href="?print=1">Print current page</a> - <a href="/all.html?print=1">Print all pages</a>
+            
+        </footer>
+    </div>
+</body>
+</html>

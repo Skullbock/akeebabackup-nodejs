@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Beautiful Docs</title>
+    <link type="text/css" rel="stylesheet" href="http://fonts.googleapis.com/css?family=Droid+Sans&subset=latin">
+    <link type="text/css" rel="stylesheet" href="/css/reset.css">
+    <link type="text/css" rel="stylesheet" href="/css/docs.css">
+    <link type="text/css" rel="stylesheet" href="/css/print.css" media="print">
+    <link type="text/css" rel="stylesheet" href="http://yandex.st/highlightjs/6.1/styles/sunburst.min.css">
+    
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
+    <script type="text/javascript" src="http://yandex.st/highlightjs/6.1/highlight.min.js"></script>
+    
+    <script type="text/javascript" src="/js/viewer.js"></script>
+</head>
+<body>
+    <div id="page">
+        <a name="top" />
+        
+            <header id="header">
+                <h1><a href="/">Beautiful Docs</a></h1>
+            </header>
+        
+        
+    <div id="sidebar">
+        <nav id="toc">
+            <ol>
+                
+                    <li>
+                        <a href="/readme.html#akeebabackup-module-for-nodejs">AkeebaBackup module for NodeJS</a>
+                        
+                            <ol>
+                                
+                                    <li><a href="/readme.html#installation">Installation</a></li>
+                                
+                                    <li><a href="/readme.html#examples">Examples</a></li>
+                                
+                            </ol>
+                        
+                    </li>
+                
+            </ol>
+        </nav>
+    </div>
+
+<article id="content">
+    <a name="akeebabackup-module-for-nodejs"></a><h1>AkeebaBackup module for NodeJS</h1>
+<p>This module lets you easily use the AkeebaBackup JSON APIs in node.js. AkeebaBackup (<a href="http://www.akeebabackup.com">http://www.akeebabackup.com</a>) is THE backup software for Joomla!
+
+</p>
+<a name="installation"></a><h2>Installation</h2>
+<p>Using <code>npm</code>:
+
+</p>
+<pre><code>npm install akeebabackup</code></pre>
+<p>You can also clone this repository into your <code>node_modules</code> directory.
+
+</p>
+<a name="examples"></a><h2>Examples</h2>
+<a name="trigger-a-backup"></a><h3>Trigger a Backup</h3>
+<pre><code class="lang-js">var akeeba = require(&#39;akeebabackup&#39;);
+
+var yoursite = new akeeba(&#39;http://www.example.com&#39;, &#39;yoursecretkey&#39;);
+
+try {
+    yoursite.backup();
+    yoursite.on(&#39;completed&#39;, function(data){console.log(&#39;backup completed&#39;)});
+} catch(e) {
+    console.log(e);
+}</code></pre>
+
+</article>
+
+        <footer id="footer">
+            Powered by <a href="http://github.com/maximebf/beautiful-docs">beautiful-docs</a> -
+            <a href="#top">Back to top</a> - <a href="/all.html">Everything on a single page</a>
+            - <a href="?print=1">Print current page</a> - <a href="/all.html?print=1">Print all pages</a>
+            
+        </footer>
+    </div>
+</body>
+</html>

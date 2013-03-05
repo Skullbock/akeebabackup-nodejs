@@ -230,7 +230,7 @@ AkeebaBackup.prototype.download = function(id, file) {
             segment:    1
         };
 
-        var json = $this.getRequest('download', data);
+        //var json = $this.getRequest('download', data);
 
         function stepDownload(part, segment) {
             data.part_id = part;
